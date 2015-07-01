@@ -15,151 +15,136 @@ Sections are differents of Pages because the name of its templates begin with '_
 
 Add your sections in the same way as you add a subpage in `site/template` and in the `content` folder but the name of the files should begin with an underscore "_" in order to difference this of the normal pages. Example:
 
-### Content folder
-	
-	content/
-	  home/
-	    1-hero-header/
-	      _hero-header.txt
-	    2-services/
-	      _services.txt
-	    2-team/
-	      _team.txt
-	    3-testominials
-	      _testimonials.txt
-	    newsletter
-	      _newsletter.txt
-		promo-banner/
-		  _promo-banner.txt
-		...
-		
-### Templates
-	
-	site/
-	  templates/
-	  	_hero-header.php
-	  	_services.php
-	  	_team.php
-	  	_testimonials.php
-	  	_newsletter.php
-	  	_promo-banner.php
-	  	
-	  	... 
-	  	
-	  	home.php
-	  	default.php
+### Templates & Blueprints
 
-### Blueprints
-	
-	site/
-	  blueprints/
-	    _hero-header.php
-	  	_services.php
-	  	_team.php
-	  	_testimonials.php
-	  	_newsletter.php
-	    _promo-banner.php
-	    ...
-	    
+content/home                | site/templates    | site/blueprints
+:-------------------------- | :---------------- | :---------------
+01-hero/_hero-header.txt    | _hero-header.php  | _hero-header.php
+02-services/_services.txt   | _services.php     | _services.php
+03-teamwork/_team.txt       | _team.php         | _team.php
+03-testominials/_quotes.txt | _quotes.php       | _quotes.php
+**Invisible Sections**      |                   | 
+newsletter/_newsletter.txt  | _newsletter.php   | _newsletter.php
+promotions/_promo.txt       | _promo.php        | _promo.php
+
+The names of the pages, template and blueprints must match.
+
 ### Controllers & Models
 	  
 If you prefer, you also could add [controllers](http://getkirby.com/docs/templates/controllers) & [models](http://getkirby.com/docs/templates/models).
 
 ### Fetch and render the sections
 
-Render the sections in a template file, ie: home.php
+Render the sections in a template file of a Page, ie: home.php
 
-	<!-- home -->
-	<? snippet('header') ?>
-	  <?php sections()->render() ?>
-	<? snippet('footer') ?>
-	
+```php
+<? snippet('header') ?>
+  <?php sections()->render() ?>
+<? snippet('footer') ?>
+```	
+
 Or only the visible sections
-	
-	<?php sections()->renderVisible() ?>
+
+```php
+<?php sections()->renderVisible() ?>
+```
 	
 Or render in a loop
-	
-	<?php foreach (sections() as $section): ?>
-	   <?php $section->render() ?>
-	<?php endforeach ?>
+
+```php
+<?php foreach (sections() as $section): ?>
+   <?php $section->render() ?>
+<?php endforeach ?>
+```
 
 Firter de visibles in a loop
-	
-	<?php foreach (sections()->visible() as $section): ?>
-	   <?php $section->render() ?>
-	<?php endforeach ?>
-	
+
+```php
+<?php foreach (sections()->visible() as $section): ?>
+   <?php $section->render() ?>
+<?php endforeach ?>
+```
 
 Send variables to the template of the section
 
-	<?php foreach (sections() as $section): ?>
-	  <section>
-	    <?php 
-	      $section->render(array(
-	        'foo' => 'value1',
-	        'bar' => 'value2',
-	        // ...
-	      ));
-	    ?>
-	  </section>
-	<?php endforeach ?>
-	
+```php
+<?php foreach (sections() as $section): ?>
+   <?php 
+     $section->render(array(
+       'foo' => 'value1',
+       'bar' => 'value2',
+       // ...
+     ));
+   ?>
+<?php endforeach ?>
+```
+
 If you prefer you could fetch the sections of a specific page
 
-	sections(page('uri'))->render();
+```php
+sections(page('uri'))->render();
+```
 
 ## Avoid direct links
 
 As sections are fragments of code that are rendered in a template, they don't shoud have a direct link access so you need to edit the template of a section as follow:
-	
-	<!-- testimonials -->
-	
-	<?php Sections::avoidDirectLink($page); ?>
-	
-	<section>
-	  <h1><?php echo $page->title() ?></h1>
-	  <?php echo $page->content()->kirbytext() ?>
-	  ...
-	</section>
+
+```php	
+<!-- testimonials -->
+
+<?php Sections::avoidDirectLink($page); ?>
+
+<section>
+  <h1><?php echo $page->title() ?></h1>
+  <?php echo $page->content()->kirbytext() ?>
+  ...
+</section>
+```
 
 The section will be redirected to the parent page, in this case, when the user tries to visit `http://site.com/home/testominials` the site will be redirected to `http://site.com/#testominials`. A hash `#...` will be added to the url. so in order to get a better aproach of this, you may add an id to your `<section>` tag as follow:
 
-	<!-- testimonials -->
-	
-	<?php Sections::avoidDirectLink($page); ?>
-	
-	<section id="<?php echo $page->uid() ?>">
-	  <h1><?php echo $page->title() ?></h1>
-	  <?php echo $page->content()->kirbytext() ?>
-	  ...
-	</section>
+```html
+testimonials.php
+<?php Sections::avoidDirectLink($page); ?>
+
+<section id="<?php echo $page->uid() ?>">
+  <h1><?php echo $page->title() ?></h1>
+  <?php echo $page->content()->kirbytext() ?>
+  ...
+</section>
+```
 	
 If you want to disable the hash, you could set false to the tirth argument:
 
-	<?php Sections::avoidDirectLink($page, true, false); ?>
+```php
+<?php Sections::avoidDirectLink($page, true, false); ?>
+```
 	
 If you don't want to redirect, just sent a false to the second argument and a error page will be showed instead
 
-	<?php Sections::avoidDirectLink($page, false); ?>
+```php
+<?php Sections::avoidDirectLink($page, false); ?>
+```
 
 ## Other useful methods
-	
-	// Gets all the Section objects from a Page object
-	Sections::all($page);
-	
-	// Count the Section objects in the parent Page
-	Sections::countSections($page);
-	
-	// Check if a Page is a Section
-	Sections::pageIsSection($page);
-	
-	// Check if a Page object has sections
-	Sections::hasSections($page);
-	
-	// The previous method is usefull to avoid the printing of sections in menues
-	// You could do something like this:
-	
-	<? if ($page->hasVisibleChildren() && !Sections::hasSections($page)): ?>
-	  <a href="<?php echo $page->url() ?>"><?php echo html($page->title()) ?></a>
-	<? endif ?>
+
+```php	
+// Gets all the Section objects from a Page object
+Sections::all($page);
+
+// Count the Section objects in the parent Page
+Sections::countSections($page);
+
+// Check if a Page is a Section
+Sections::pageIsSection($page);
+
+// Check if a Page object has sections
+Sections::hasSections($page);
+
+// The previous method is usefull to avoid the printing of sections in menues
+// You could do something like this:
+
+<? if ($page->hasVisibleChildren() && !Sections::hasSections($page)): ?>
+  <a href="<?php echo $page->url() ?>"><?php echo html($page->title()) ?></a>
+<? endif ?>
+```
