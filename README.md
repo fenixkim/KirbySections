@@ -37,7 +37,7 @@ If you prefer, you also could add [controllers](http://getkirby.com/docs/templat
 
 Render the sections in a template file of a Page, ie: home.php
 
-```php
+```html
 <? snippet('header') ?>
   <?php sections()->render() ?>
 <? snippet('footer') ?>
@@ -46,37 +46,35 @@ Render the sections in a template file of a Page, ie: home.php
 Or only the visible sections
 
 ```php
-<?php sections()->renderVisible() ?>
+sections()->renderVisible();
 ```
 	
 Or render in a loop
 
 ```php
-<?php foreach (sections() as $section): ?>
-   <?php $section->render() ?>
-<?php endforeach ?>
+foreach (sections() as $section) {
+   $section->render();
+}
 ```
 
 Firter de visibles in a loop
 
 ```php
-<?php foreach (sections()->visible() as $section): ?>
-   <?php $section->render() ?>
-<?php endforeach ?>
+foreach (sections()->visible() as $section) {
+   $section->render();
+}
 ```
 
 Send variables to the template of the section
 
 ```php
-<?php foreach (sections() as $section): ?>
-   <?php 
-     $section->render(array(
-       'foo' => 'value1',
-       'bar' => 'value2',
-       // ...
-     ));
-   ?>
-<?php endforeach ?>
+foreach (sections() as $section) {
+   $section->render(array(
+     'foo' => 'value1',
+     'bar' => 'value2',
+     // ...
+   ));
+}
 ```
 
 If you prefer you could fetch the sections of a specific page
@@ -89,9 +87,8 @@ sections(page('uri'))->render();
 
 As sections are fragments of code that are rendered in a template, they don't shoud have a direct link access so you need to edit the template of a section as follow:
 
-```php	
+```html+php
 <!-- testimonials -->
-
 <?php Sections::avoidDirectLink($page); ?>
 
 <section>
@@ -103,8 +100,7 @@ As sections are fragments of code that are rendered in a template, they don't sh
 
 The section will be redirected to the parent page, in this case, when the user tries to visit `http://site.com/home/testominials` the site will be redirected to `http://site.com/#testominials`. A hash `#...` will be added to the url. so in order to get a better aproach of this, you may add an id to your `<section>` tag as follow:
 
-```html
-testimonials.php
+```html+php
 <?php Sections::avoidDirectLink($page); ?>
 
 <section id="<?php echo $page->uid() ?>">
@@ -113,7 +109,7 @@ testimonials.php
   ...
 </section>
 ```
-	
+
 If you want to disable the hash, you could set false to the tirth argument:
 
 ```php
@@ -140,10 +136,11 @@ Sections::pageIsSection($page);
 
 // Check if a Page object has sections
 Sections::hasSections($page);
+```
 
-// The previous method is usefull to avoid the printing of sections in menues
-// You could do something like this:
+The `Sections::hasSections()` method is usefull to avoid the printing of sections in menus or sitemaps. You could try something like this:
 
+```html+php
 <? if ($page->hasVisibleChildren() && !Sections::hasSections($page)): ?>
   <a href="<?php echo $page->url() ?>"><?php echo html($page->title()) ?></a>
 <? endif ?>
