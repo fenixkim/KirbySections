@@ -33,6 +33,18 @@ The names of the pages, template and blueprints must match.
 	  
 If you prefer, you also could add [controllers](http://getkirby.com/docs/templates/controllers) & [models](http://getkirby.com/docs/templates/models).
 
+**Important:** If you want to use Models, the name of de Sections can't contain dashes (`-`) and the should be a subclass of `Section`. 
+
+Ie: Rename `_hero-header.php` to `_heroheader.php` and create its model as follow.
+
+```php
+class HeroHeaderPage extends Section {
+  public function method() {
+    // ... return something here
+  }
+}
+```
+
 ### Fetch and render the sections
 
 Render the sections in a template file of a Page, ie: home.php
