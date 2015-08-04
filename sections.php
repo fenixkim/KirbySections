@@ -78,7 +78,17 @@ class Sections extends Pages {
     
     // Add to the collection each item as Section
     foreach(self::all($parent) as $page) {
-      $this->data[$page->id()] = new Section($parent, $page->dirname());
+      
+      // With model
+      if (array_key_exists((string)$page->intendedTemplate(), page::$models)) {
+        
+        // Get from the parent data cache
+        $this->data[$page->id()] = $this->parent->children()->data[$page->id()];
+        
+      // Without model
+      } else {
+        $this->data[$page->id()] = new Section($parent, $page->dirname());
+      }
     }
   }
     
